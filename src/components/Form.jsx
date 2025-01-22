@@ -25,18 +25,39 @@ const Form = () => {
     urlImage: '',
     content: '',
     category: '',
-    tags: [], // array di stringhe
+    tags: [],
     published: false
   }
 
   //inserisco le costanti di stato:
-  const [articleList, setArticleList] = useState(initialformData);
-  const [newListItem, setNewListItem] = useState('');
+  const [initialForm, setInitialForm] = useState(initialformData);
+  const [newArticle, setNewArticle] = useState([]);
+
+  //inserisco una funzione che mi permette di gestire i campi del form
+  const handlerField = (e) => {
+
+    let value = e.target.value;
+    if (e.target.name === 'category') {
+      value = categories[e.target.value]
+    }
+    if (e.target.type === 'checkbox') {
+      value = e.target.checked
+    }
+
+    setInitialForm({
+      ...initialForm,
+      [e.target.name]: value
+    })
+
+  }
 
   const handlerSubmit = (e) => {
     e.preventDefault();
     //creo un clone dell'array e aggiungo il nuovo elemento
-    setArticleList([newListItem, ...articleList])
+    setNewArticle([
+      { id: self.crypto.randomUUID(), ...initialForm },
+      ...newArticle
+    ])
   }
 
 
@@ -44,33 +65,51 @@ const Form = () => {
   return (
     <div className="card p-4">
       <h3 className='mb-4'>Inserisci un nuovo articolo</h3>
-      <form action="#">
+      <form onSubmit={handlerSubmit}>
         <div className="row mb-3">
-          <label for="title" className="col-sm-2 col-form-label fw-semibold">Titolo</label>
+          <label htmlFor="title" className="col-sm-2 col-form-label fw-semibold">Titolo</label>
           <div className="col-sm-10">
-            <input type="text" className="form-control" id="title" />
+            <input
+              type="text"
+              className="form-control"
+              id="title"
+              value={initialForm.title}
+              onChange={handlerField}
+            />
           </div>
         </div>
         <div className="row mb-3">
-          <label for="url" className="col-sm-2 col-form-label fw-semibold">URL immagine</label>
+          <label htmlFor="url" className="col-sm-2 col-form-label fw-semibold">URL immagine</label>
           <div className="col-sm-10">
-            <input type="text" className="form-control" id="url" />
+            <input
+              type="text"
+              className="form-control"
+              id="url"
+              value={initialForm.urlImage}
+              onChange={handlerField}
+            />
           </div>
         </div>
         <div className="row mb-3">
-          <label for="content" className="col-sm-2 col-form-label fw-semibold">Contenuto</label>
+          <label htmlFor="content" className="col-sm-2 col-form-label fw-semibold">Contenuto</label>
           <div className="col-sm-10">
-            <textarea type="text" className="form-control" id="content" ></textarea>
+            <textarea
+              type="text"
+              className="form-control"
+              id="content"
+              value={initialForm.content}
+              onChange={handlerField}
+            ></textarea>
           </div>
         </div>
         <div className="row mb-4">
-          <label for="content" className="col-sm-2 col-form-label fw-semibold">Categoria</label>
+          <label htmlFor="content" className="col-sm-2 col-form-label fw-semibold">Categoria</label>
           <div className="col-sm-10">
             <select
               className="form-select"
-
               name="category"
               defaultValue=""
+              onChange={handlerField}
             >
               <option selected>Seleziona una categoria</option>
               {categories.map((category, index) => (
@@ -83,7 +122,7 @@ const Form = () => {
           <legend className="col-form-label col-sm-2 pt-0 fw-semibold">Tags</legend>
           <div className="col-sm-10">
             {tags.map(tag => (
-              <div className="form-check">
+              <div key={`tag${tag.id}`} className="form-check">
                 <input
                   className="form-check-input"
                   type="checkbox"
@@ -108,9 +147,10 @@ const Form = () => {
                 type="checkbox"
                 name="published"
                 id="published"
-              // checked={}
+                checked={initialForm.content}
+                onChange={handlerField}
               />
-              <label className="form-check-label" for="gridRadios1">
+              <label className="form-check-label" htmlFor="published">
                 Pubblicato
               </label>
             </div>

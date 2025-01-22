@@ -4,7 +4,7 @@ const ArticleList = () => {
   return (
     <div className="card my-3 p-4">
       <h3>Elenco Articoli</h3>
-      <table class="table">
+      <table className="table">
         <thead>
           <tr>
             <th scope="col">Immagine</th>
