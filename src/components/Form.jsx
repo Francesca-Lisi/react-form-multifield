@@ -30,8 +30,11 @@ const Form = () => {
   }
 
   //inserisco le costanti di stato:
-  const [initialForm, setInitialForm] = useState(initialformData);
-  const [newArticle, setNewArticle] = useState([]);
+  // const [initialForm, setInitialForm] = useState(initialformData);
+
+  const [newArticle, setNewArticle] = useState(initialformData);
+  const [articles, setArticles] = useState([]);
+
 
   //inserisco una funzione che mi permette di gestire i campi del form
   const handlerField = (e) => {
@@ -44,21 +47,43 @@ const Form = () => {
       value = e.target.checked
     }
 
-    setInitialForm({
-      ...initialForm,
+    setNewArticle({
+      ...newArticle,
       [e.target.name]: value
     })
 
   }
 
+  //inserisco una funzione che mi permette di gestire l'array dei tags
+  const handlerTags = (e) => {
+    let { tags, ...others } = newArticle;
+    // se il tag è già presente nell'array dei tag lo tolgo
+    console.log(tags);
+
+    if (tags.includes(e.target.value)) {
+      tags = tags.filter(tag => tag !== e.target.value)
+    } else {
+      tags = [...tags, e.target.value]
+    }
+
+    setNewArticle({
+      tags,
+      ...others
+    })
+  }
+
+  //inserisco una funzione che mi permette di gestire il submit del form
   const handlerSubmit = (e) => {
     e.preventDefault();
     //creo un clone dell'array e aggiungo il nuovo elemento
-    setNewArticle([
-      { id: self.crypto.randomUUID(), ...initialForm },
-      ...newArticle
+    setArticles([
+      { id: self.crypto.randomUUID(), ...newArticle },
+      ...articles
     ])
   }
+
+
+
 
 
 
@@ -71,9 +96,10 @@ const Form = () => {
           <div className="col-sm-10">
             <input
               type="text"
+              name='title'
               className="form-control"
               id="title"
-              value={initialForm.title}
+              value={newArticle.title}
               onChange={handlerField}
             />
           </div>
@@ -84,8 +110,9 @@ const Form = () => {
             <input
               type="text"
               className="form-control"
+              name='urlImage'
               id="url"
-              value={initialForm.urlImage}
+              value={newArticle.urlImage}
               onChange={handlerField}
             />
           </div>
@@ -95,9 +122,10 @@ const Form = () => {
           <div className="col-sm-10">
             <textarea
               type="text"
+              name='content'
               className="form-control"
               id="content"
-              value={initialForm.content}
+              value={newArticle.content}
               onChange={handlerField}
             ></textarea>
           </div>
@@ -108,10 +136,10 @@ const Form = () => {
             <select
               className="form-select"
               name="category"
-              defaultValue=""
+              defaultValue="default"
               onChange={handlerField}
             >
-              <option selected>Seleziona una categoria</option>
+              <option value='default'>Seleziona una categoria</option>
               {categories.map((category, index) => (
                 <option key={index} value={index}>{category}</option>
               ))}
@@ -128,6 +156,7 @@ const Form = () => {
                   type="checkbox"
                   id={`tag${tag.id}`}
                   value={tag.name}
+                  onChange={handlerTags}
                 />
                 <label className="form-check-label" htmlFor={`tag${tag.id}`}>
                   {tag.name}
@@ -147,7 +176,7 @@ const Form = () => {
                 type="checkbox"
                 name="published"
                 id="published"
-                checked={initialForm.content}
+                checked={newArticle.content}
                 onChange={handlerField}
               />
               <label className="form-check-label" htmlFor="published">
